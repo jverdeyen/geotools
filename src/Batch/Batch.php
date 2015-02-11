@@ -231,7 +231,6 @@ class Batch implements BatchInterface
     {
         $computedInParallel = array();
 
-        var_dump($this->tasks);
         Async::parallel(
             $this->tasks,
             function (array $providerResults) use (&$computedInParallel) {
