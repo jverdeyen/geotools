@@ -25,7 +25,7 @@
 
     "require" : {
         "php"                 : ">=5.3.3",
-        "willdurand/geocoder" : "~2.4",
+        "willdurand/geocoder" : "~3.0@alpha",
         "react/async"         : "~1.0",
         "symfony/console"     : "~2.4",
         "symfony/serializer"  : "~2.4"
