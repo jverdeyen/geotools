@@ -750,6 +750,10 @@ class BatchTest extends \League\Geotools\Tests\TestCase
         ))->geocode('foo')->serie();
     }
 
+    /**
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage booooooooooo!
+     */
     public function testParallelShouldThrowException()
     {
         $called = 0;
