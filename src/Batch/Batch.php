@@ -11,7 +11,7 @@
 
 namespace League\Geotools\Batch;
 
-use Geocoder\GeocoderInterface;
+use Geocoder\Geocoder as GeocoderInterface;
 use League\Geotools\Batch\BatchResult;
 use League\Geotools\Cache\CacheInterface;
 use League\Geotools\Coordinate\CoordinateInterface;
@@ -102,8 +102,9 @@ class Batch implements BatchInterface
                             if ($cached = $cache->isCached($provider->getName(), $value)) {
                                 $callback($cached);
                             } else {
-                                $geocoder->setResultFactory(new BatchResult($provider->getName(), $value));
-                                $callback($cache->cache($geocoder->using($provider->getName())->geocode($value)));
+                                $batchResult = new BatchResult($provider->getName(), $value);
+                                $address = $geocoder->using($provider->getName())->geocode($value)->first();
+                                $callback($cache->cache($batchResult->createFromAddress($address)));
                             }
                         } catch (\Exception $e) {
                             $batchGeocoded = new BatchResult($provider->getName(), $value, $e->getMessage());
@@ -117,8 +118,9 @@ class Batch implements BatchInterface
                         if ($cached = $cache->isCached($provider->getName(), $values)) {
                             $callback($cached);
                         } else {
-                            $geocoder->setResultFactory(new BatchResult($provider->getName(), $values));
-                            $callback($cache->cache($geocoder->using($provider->getName())->geocode($values)));
+                            $batchResult = new BatchResult($provider->getName(), $values);
+                            $address = $geocoder->using($provider->getName())->geocode($values)->first();
+                            $callback($cache->cache($batchResult->createFromAddress($address)));
                         }
                     } catch (\Exception $e) {
                         $batchGeocoded = new BatchResult($provider->getName(), $values, $e->getMessage());
@@ -152,13 +154,12 @@ class Batch implements BatchInterface
                             if ($cached = $cache->isCached($provider->getName(), $valueCoordinates)) {
                                 $callback($cached);
                             } else {
-                                $geocoder->setResultFactory(new BatchResult($provider->getName(), $valueCoordinates));
-                                $callback($cache->cache(
-                                    $geocoder->using($provider->getName())->reverse(
+                                $batchResult = new BatchResult($provider->getName(), $valueCoordinates);
+                                $address = $geocoder->using($provider->getName())->reverse(
                                         $coordinate->getLatitude(),
                                         $coordinate->getLongitude()
-                                    )
-                                ));
+                                    )->first();
+                                $callback($cache->cache($batchResult->createFromAddress($address)));
                             }
                         } catch (\Exception $e) {
                             $batchGeocoded = new BatchResult($provider->getName(), $valueCoordinates, $e->getMessage());
@@ -173,13 +174,12 @@ class Batch implements BatchInterface
                         if ($cached = $cache->isCached($provider->getName(), $valueCoordinates)) {
                             $callback($cached);
                         } else {
-                            $geocoder->setResultFactory(new BatchResult($provider->getName(), $valueCoordinates));
-                            $callback($cache->cache(
-                                $geocoder->using($provider->getName())->reverse(
+                            $batchResult = new BatchResult($provider->getName(), $valueCoordinates);
+                            $address = $geocoder->using($provider->getName())->reverse(
                                     $coordinates->getLatitude(),
                                     $coordinates->getLongitude()
-                                )
-                            ));
+                                )->first();
+                            $callback($cache->cache($batchResult->createFromAddress($address)));
                         }
                     } catch (\Exception $e) {
                         $batchGeocoded = new BatchResult($provider->getName(), $valueCoordinates, $e->getMessage());
